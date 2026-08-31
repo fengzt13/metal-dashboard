@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>金铜大宗景气度看板 · Gold & Copper Dashboard</title>
+  <link rel="stylesheet" href="css/style.css">
+  <!-- ECharts CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <h1 class="logo">金铜大宗景气度看板</h1>
+      <nav class="main-nav" id="mainNav">
+        <button class="nav-btn active" data-page="overview">综合总览</button>
+        <button class="nav-btn" data-page="gold">黄金专题</button>
+        <button class="nav-btn" data-page="copper">铜专题</button>
+        <button class="nav-btn" data-page="ratio">金铜比分析</button>
+        <button class="nav-btn" data-page="macro">宏观背景</button>
+        <button class="nav-btn" data-page="sources">数据源</button>
+      </nav>
+      <div class="header-meta">
+        <span id="updateDate" class="update-date">数据更新中…</span>
+      </div>
+    </div>
+  </header>
+
+  <main class="page-container">
+    <!-- 综合总览页 -->
+    <section class="page active" id="page-overview">
+      <div class="page-title">
+        <h2>金铜综合景气度总览</h2>
+        <p class="subtitle">一屏掌握黄金与铜当前状态与景气度高低</p>
+      </div>
+
+      <div class="dashboard-grid">
+        <!-- 景气度仪表盘 -->
+        <div class="card card-full">
+          <div class="card-head">
+            <h3>金铜景气度仪表盘</h3>
+            <span class="card-tag" id="overallTag">计算中…</span>
+          </div>
+          <div class="gauge-grid" id="gaugeGrid">
+            <div class="gauge-box">
+              <div class="gauge-title">黄金景气度</div>
+              <div id="gaugeGold" class="gauge-chart"></div>
+            </div>
+            <div class="gauge-box">
+              <div class="gauge-title">铜景气度</div>
+              <div id="gaugeCopper" class="gauge-chart"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 金铜比走势 -->
+        <div class="card card-half">
+          <div class="card-head">
+            <h3>金铜比走势（近5年）</h3>
+            <span class="card-tag" id="ratioTag">—</span>
+          </div>
+          <div id="chartRatio" class="chart"></div>
+        </div>
+
+        <!-- 双价格走势 -->
+        <div class="card card-half">
+          <div class="card-head">
+            <h3>金价 / 铜价 叠加走势（近5年）</h3>
+          </div>
+          <div id="chartDualPrice" class="chart"></div>
+        </div>
+
+        <!-- 景气度雷达 -->
+        <div class="card card-half">
+          <div class="card-head">
+            <h3>五维景气度雷达对比</h3>
+          </div>
+          <div id="chartRadar" class="chart"></div>
+        </div>
+
+        <!-- 关键指标卡片 -->
+        <div class="card card-half">
+          <div class="card-head"><h3>关键指标快照</h3></div>
+          <div id="metricCards" class="metric-grid"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 黄金专题页 -->
+    <section class="page" id="page-gold">
+      <div class="page-title">
+        <h2>黄金专题</h2>
+        <p class="subtitle">价格 · 央行净买入 · 需求结构 · 库存 · ETF持仓</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card card-full">
+          <div class="card-head"><h3>黄金价格走势（近5年）</h3></div>
+          <div id="chartGoldPrice" class="chart chart-lg"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>全球央行黄金净买入（季度，吨）</h3></div>
+          <div id="chartGoldCbBuy" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>黄金需求结构（四大类）</h3></div>
+          <div id="chartGoldDemand" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>黄金库存走势（COMEX/SHFE，吨）</h3></div>
+          <div id="chartGoldInventory" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>黄金ETF持仓（吨）</h3></div>
+          <div id="chartGoldEtf" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 铜专题页 -->
+    <section class="page" id="page-copper">
+      <div class="page-title">
+        <h2>铜专题</h2>
+        <p class="subtitle">价格 · 产能供给 · 库存 · 需求 · 加工费信号</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card card-full">
+          <div class="card-head"><h3>铜价走势（近5年）</h3></div>
+          <div id="chartCopperPrice" class="chart chart-lg"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>全球精炼铜产量（近5年）</h3></div>
+          <div id="chartCopperSupply" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>三大交易所铜库存（近5年）</h3></div>
+          <div id="chartCopperInventory" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>全球精炼铜消费量（近5年）</h3></div>
+          <div id="chartCopperDemand" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>铜精矿加工费 TC（美元/吨）</h3></div>
+          <div id="chartCopperTc" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 金铜比分析页 -->
+    <section class="page" id="page-ratio">
+      <div class="page-title">
+        <h2>金铜比 &amp; 交叉分析</h2>
+        <p class="subtitle">金铜比是判断经济景气与衰退的经典先行指标</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card card-full">
+          <div class="card-head"><h3>金铜比与宏观指标叠加</h3></div>
+          <div id="chartRatioMacro" class="chart chart-lg"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>金铜景气度评分对比</h3></div>
+          <div id="chartScoreCompare" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>金铜价格滚动相关性（近5年）</h3></div>
+          <div id="chartCorr" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 宏观背景页 -->
+    <section class="page" id="page-macro">
+      <div class="page-title">
+        <h2>宏观背景</h2>
+        <p class="subtitle">美元 · 美债实际利率 · 全球PMI · 货币政策周期</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card card-half">
+          <div class="card-head"><h3>美元指数 DXY（近5年）</h3></div>
+          <div id="chartDxy" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>10年期美债实际利率 TIPS</h3></div>
+          <div id="chartTips" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>全球制造业 PMI（近5年）</h3></div>
+          <div id="chartPmi" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>美联储货币政策周期时间轴</h3></div>
+          <div id="chartRateCycle" class="chart"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 数据源页 -->
+    <section class="page" id="page-sources">
+      <div class="page-title">
+        <h2>数据源说明</h2>
+        <p class="subtitle">每个指标均标注来源机构 · 更新频率 · 最后更新时间，数据可追溯</p>
+      </div>
+      <div class="dashboard-grid">
+        <div class="card card-full">
+          <div id="sourcesTable" class="sources-wrap"></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>金铜大宗品景气度看板 · 数据来源见「数据源」页 · 仅供研究参考，不构成投资建议</p>
+  </footer>
+
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

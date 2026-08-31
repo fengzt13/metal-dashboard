@@ -1,0 +1,220 @@
+/* ===== 金铜大宗景气度看板 样式 =====
+   白底 + 淡蓝主色，高级简约风格 */
+
+:root {
+  --bg: #f7f9fc;
+  --card-bg: #ffffff;
+  --primary: #2f6fed;        /* 主色 淡蓝 */
+  --primary-light: #e8f0ff;
+  --primary-soft: #dbe9ff;
+  --text: #1f2d3d;
+  --text-sub: #6b7a8f;
+  --text-muted: #9aa8bb;
+  --border: #e6edf5;
+  --gold: #d4a017;          /* 黄金主题色 */
+  --copper: #c06c3c;        /* 铜主题色 */
+  --red: #d9534f;           /* 景气度 - 高温警示 */
+  --green: #3aa66b;         /* 景气度 - 温和 */
+  --blue: #2f6fed;
+  --shadow: 0 2px 12px rgba(47, 111, 237, 0.06);
+  --radius: 12px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Microsoft YaHei", "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* ===== Header ===== */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.03);
+}
+.header-inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.logo {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+  letter-spacing: 1px;
+}
+.logo::before {
+  content: "◆";
+  color: var(--primary);
+  margin-right: 6px;
+  font-size: 16px;
+}
+.main-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.nav-btn {
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-sub);
+  font-size: 14px;
+  padding: 8px 16px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+}
+.nav-btn:hover { color: var(--primary); background: var(--primary-light); }
+.nav-btn.active {
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+.header-meta .update-date {
+  font-size: 12px;
+  color: var(--text-muted);
+  background: var(--primary-light);
+  padding: 4px 12px;
+  border-radius: 12px;
+}
+
+/* ===== Layout ===== */
+.page-container { max-width: 1280px; margin: 0 auto; padding: 24px; }
+.page { display: none; }
+.page.active { display: block; }
+.page-title { margin-bottom: 20px; }
+.page-title h2 {
+  font-size: 22px;
+  color: var(--text);
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+.page-title .subtitle { color: var(--text-sub); font-size: 14px; }
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 18px;
+  transition: transform .15s;
+}
+.card:hover { transform: translateY(-2px); }
+.card-full { grid-column: 1 / -1; }
+.card-half { grid-column: span 1; }
+
+.card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.card-head h3 {
+  font-size: 15px;
+  color: var(--text);
+  font-weight: 600;
+}
+.card-tag {
+  font-size: 12px;
+  color: var(--text-sub);
+  background: var(--primary-light);
+  padding: 3px 10px;
+  border-radius: 10px;
+}
+.chart { width: 100%; height: 320px; }
+.chart-lg { height: 400px; }
+
+/* ===== 仪表盘 ===== */
+.gauge-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+.gauge-box { text-align: center; }
+.gauge-title { font-size: 15px; font-weight: 600; color: var(--text); margin-bottom: 4px; }
+.gauge-chart { width: 100%; height: 260px; }
+
+/* ===== 指标卡片 ===== */
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+.metric-card {
+  background: var(--primary-light);
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+.metric-card .m-label { font-size: 12px; color: var(--text-sub); }
+.metric-card .m-value { font-size: 18px; font-weight: 700; color: var(--text); margin-top: 2px; }
+.metric-card .m-note { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.metric-card .m-value.gold { color: var(--gold); }
+.metric-card .m-value.copper { color: var(--copper); }
+.metric-card .m-value.blue { color: var(--blue); }
+
+/* ===== 数据源表 ===== */
+.sources-wrap table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.sources-wrap th, .sources-wrap td {
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+}
+.sources-wrap th {
+  background: var(--primary-light);
+  color: var(--text);
+  font-weight: 600;
+}
+.sources-wrap tr:hover td { background: #f6faff; }
+.sources-wrap .src-missing { color: var(--copper); font-style: italic; }
+
+/* ===== Footer ===== */
+.site-footer {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border);
+}
+
+/* ===== 响应式 ===== */
+@media (max-width: 900px) {
+  .dashboard-grid { grid-template-columns: 1fr; }
+  .gauge-grid { grid-template-columns: 1fr; }
+  .metric-grid { grid-template-columns: 1fr; }
+  .header-inner { flex-direction: column; align-items: flex-start; }
+}
+
+/* ===== 加载/空态提示 ===== */
+.chart-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+.data-note {
+  font-size: 12px;
+  color: var(--red);
+  background: #fff3f3;
+  border: 1px solid #ffd5d5;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 10px;
+}
