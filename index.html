@@ -90,28 +90,56 @@
     <section class="page" id="page-gold">
       <div class="page-title">
         <h2>黄金专题</h2>
-        <p class="subtitle">价格 · 央行净买入 · 需求结构 · 库存 · ETF持仓</p>
+        <p class="subtitle">价格 · 央行购金 · 需求结构 · 库存 · ETF持仓 · 数据截至 2026-07</p>
       </div>
       <div class="dashboard-grid">
         <div class="card card-full">
-          <div class="card-head"><h3>黄金价格走势（近5年）</h3></div>
+          <div class="card-head">
+            <h3>黄金价格走势（月度，2021.01-2026.07）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartGoldPrice" class="chart chart-lg"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>全球央行黄金净买入（季度，吨）</h3></div>
+          <div class="card-head">
+            <h3>全球央行黄金净买入（月度，吨）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartGoldCbBuy" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>黄金需求结构（四大类）</h3></div>
+          <div class="card-head">
+            <h3>中国央行月度净买入 &amp; 储备</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
+          <div id="chartGoldChinaCb" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head"><h3>黄金需求结构（四大类，2024）</h3></div>
           <div id="chartGoldDemand" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>黄金库存走势（COMEX/SHFE，吨）</h3></div>
+          <div class="card-head">
+            <h3>黄金库存与金价叠加（月度）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartGoldInventory" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>黄金ETF持仓（吨）</h3></div>
+          <div class="card-head">
+            <h3>黄金ETF持仓与金价叠加（月度）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartGoldEtf" class="chart"></div>
+        </div>
+        <div class="card card-full">
+          <div class="card-head"><h3>黄金库存与金价关系说明</h3></div>
+          <div style="padding:12px 20px;line-height:1.8;font-size:13px;color:#1f2d3d;">
+            <p><strong style="color:#2f6fed;">COMEX库存与金价：</strong>2024年COMEX黄金库存从年初约695吨降至年底约530吨（降幅24%），同期金价从约2034美元涨至2648美元（涨幅30%）——库存下降与金价上涨呈反向关系，反映实物金被提取流入ETF和亚太市场。2025年库存从560吨回升至780吨，金价继续上涨至3474美元，两者同向，说明此阶段库存回升受ETF回流推动（ETF从3100吨增至3900吨）。</p>
+            <p><strong style="color:#2f6fed;">ETF持仓与金价：</strong>2021-2024年ETF持续流出（3571&rarr;3100吨），但2024年起央行购金接棒成为核心需求支撑，金价与ETF脱钩上涨。2025年ETF净流入925吨（历史新高），ETF与金价重新同向上行。2026年2月ETF冲高至4176吨后3月流出，7月回升至4068吨，金价同步高位震荡。</p>
+            <p><strong style="color:#2f6fed;">SHFE库存：</strong>上海期货交易所黄金库存波动较大（30-69吨），2025年随着国内金价大涨，投资者交割意愿增强，SHFE库存从22吨升至60吨以上，与国内金价正相关。</p>
+            <p style="margin-top:8px;color:#6b7a8f;font-size:12px;">注：COMEX/SHFE/ETF月度数据为基于年度锚点的趋势估算，标注参考。全球央行月度2026年为WGC报告值，历史月份为年度均值插值。</p>
+          </div>
         </div>
       </div>
     </section>

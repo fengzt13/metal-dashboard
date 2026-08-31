@@ -279,46 +279,80 @@ function renderMetrics(metrics) {
    ============================================================ */
 function renderGold() {
   var g = D.gold;
+  var gm = D.goldMonthly;
+  var months = gm.months;
 
-  /* 黄金价格走势 */
-  renderChart("chartGoldPrice", Object.assign(baseConfig("黄金年度均价（美元/盎司）"), {
-    xAxis: { type: "category", data: g.price.years, axisLabel: { color: COLOR.sub } },
+  /* 月度图表通用配置 */
+  function monthlyConfig(title) {
+    return {
+      title: { text: title, left: "center", top: 4, textStyle: { fontSize: 14, color: COLOR.text } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 32 },
+      grid: { left: 60, right: 60, top: 64, bottom: 55 },
+      xAxis: { type: "category", data: months,
+        axisLine: { lineStyle: { color: COLOR.grid } },
+        axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
+      dataZoom: [
+        { type: "inside", start: 0, end: 100 },
+        { type: "slider", start: 0, end: 100, height: 18, bottom: 4 }
+      ]
+    };
+  }
+
+  /* 1. 黄金价格走势（月度，叠加月环比柱） */
+  renderChart("chartGoldPrice", Object.assign(monthlyConfig("黄金价格走势（月度，2021.01-2026.07）"), {
+    legend: { top: 32, data: ["金价(美元/盎司)", "月环比 %"] },
+    yAxis: [
+      { type: "value", name: "金价 $/oz", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "月环比 %", nameTextStyle: { color: COLOR.green },
+        axisLabel: { color: COLOR.sub, formatter: "{value}%" }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "金价(美元/盎司)", type: "line", smooth: true, data: gm.gold, yAxisIndex: 0,
+        lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold },
+        symbol: "circle", symbolSize: 3,
+        areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
+          colorStops: [{offset:0,color:"rgba(212,160,23,0.25)"},{offset:1,color:"rgba(212,160,23,0)"}] } } },
+      { name: "月环比 %", type: "bar", data: gm.goldMom, yAxisIndex: 1,
+        itemStyle: { color: function(p) { return p.value >= 0 ? "rgba(58,166,107,0.45)" : "rgba(217,83,79,0.45)"; } },
+        barWidth: "60%" }
+    ]
+  }));
+
+  /* 2. 全球央行月度净购金（吨） */
+  renderChart("chartGoldCbBuy", Object.assign(monthlyConfig("全球央行黄金净买入（月度，吨）"), {
+    yAxis: { type: "value", name: "吨", nameTextStyle: { color: COLOR.sub },
+      axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid, type: "dashed" } } },
     series: [{
-      name: "金价",
-      type: "line",
-      smooth: true,
-      data: g.price.annualAvg,
-      lineStyle: { color: COLOR.gold, width: 3 },
-      itemStyle: { color: COLOR.gold },
-      areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
-        colorStops: [{offset:0,color:"rgba(212,160,23,0.3)"},{offset:1,color:"rgba(212,160,23,0)"}] } },
-      markPoint: {
-        data: [
-          { type: "max", name: "最高", itemStyle: { color: COLOR.red } },
-          { type: "min", name: "最低", itemStyle: { color: COLOR.green } }
-        ]
+      name: "全球央行净购金",
+      type: "bar",
+      data: gm.globalCbTons,
+      itemStyle: {
+        color: function(p) { return p.value >= 0 ? COLOR.gold : COLOR.red; },
+        borderRadius: [3, 3, 0, 0]
       }
     }]
   }));
 
-  /* 央行净买入 */
-  renderChart("chartGoldCbBuy", Object.assign(baseConfig("全球央行净购金（吨/年）"), {
-    xAxis: { type: "category", data: g.cbBuy.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      name: "净购金",
-      type: "bar",
-      data: g.cbBuy.tons,
-      itemStyle: {
-        color: function (p) {
-          return p.dataIndex >= 3 ? COLOR.gold : COLOR.primary;
-        },
-        borderRadius: [4, 4, 0, 0]
-      },
-      label: { show: true, position: "top", color: COLOR.sub }
-    }]
+  /* 3. 中国央行月度净买入 & 储备（新增） */
+  renderChart("chartGoldChinaCb", Object.assign(monthlyConfig("中国央行月度净买入 & 储备（2021.01-2026.07）"), {
+    legend: { top: 32, data: ["中国央行净买入(吨)", "黄金储备(万oz)"] },
+    yAxis: [
+      { type: "value", name: "净买入(吨)", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "储备(万oz)", nameTextStyle: { color: COLOR.primary },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "中国央行净买入(吨)", type: "bar", data: gm.chinaCbTons, yAxisIndex: 0,
+        itemStyle: { color: COLOR.gold, borderRadius: [3, 3, 0, 0] } },
+      { name: "黄金储备(万oz)", type: "line", smooth: true, data: gm.chinaReserveOz, yAxisIndex: 1,
+        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary }, symbol: "none" }
+    ]
   }));
 
-  /* 需求结构（饼图） */
+  /* 4. 需求结构（饼图，保持不变） */
   renderChart("chartGoldDemand", {
     tooltip: { trigger: "item" },
     legend: { bottom: 0, textStyle: { color: COLOR.sub } },
@@ -336,31 +370,42 @@ function renderGold() {
     }]
   });
 
-  /* 库存 */
-  renderChart("chartGoldInventory", Object.assign(baseConfig("黄金库存（吨）"), {
-    xAxis: { type: "category", data: g.inventory.years, axisLabel: { color: COLOR.sub } },
-    legend: { top: 32, data: ["COMEX", "SHFE"] },
+  /* 5. 黄金库存 + 金价叠加（双Y轴） */
+  renderChart("chartGoldInventory", Object.assign(monthlyConfig("黄金库存与金价叠加（月度，吨 vs $/oz）"), {
+    legend: { top: 32, data: ["COMEX", "SHFE", "金价"] },
+    yAxis: [
+      { type: "value", name: "库存(吨)", nameTextStyle: { color: COLOR.sub },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "金价 $/oz", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
+    ],
     series: [
-      { name: "COMEX", type: "line", smooth: true, data: g.inventory.comex,
-        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary } },
-      { name: "SHFE", type: "line", smooth: true, data: g.inventory.shfe,
-        lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold } }
+      { name: "COMEX", type: "line", smooth: true, data: gm.comex, yAxisIndex: 0,
+        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary }, symbol: "none" },
+      { name: "SHFE", type: "line", smooth: true, data: gm.shfe, yAxisIndex: 0,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper }, symbol: "none" },
+      { name: "金价", type: "line", smooth: true, data: gm.gold, yAxisIndex: 1,
+        lineStyle: { color: COLOR.gold, width: 2, type: "dashed" }, itemStyle: { color: COLOR.gold }, symbol: "none" }
     ]
   }));
 
-  /* ETF持仓 */
-  renderChart("chartGoldEtf", Object.assign(baseConfig("全球黄金ETF持仓（吨）"), {
-    xAxis: { type: "category", data: g.etf.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      name: "ETF持仓",
-      type: "line",
-      smooth: true,
-      data: g.etf.tons,
-      lineStyle: { color: COLOR.gold, width: 3 },
-      itemStyle: { color: COLOR.gold },
-      areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
-        colorStops: [{offset:0,color:"rgba(212,160,23,0.25)"},{offset:1,color:"rgba(212,160,23,0)"}] } }
-    }]
+  /* 6. 黄金ETF + 金价叠加（双Y轴） */
+  renderChart("chartGoldEtf", Object.assign(monthlyConfig("黄金ETF持仓与金价叠加（月度，吨 vs $/oz）"), {
+    legend: { top: 32, data: ["ETF持仓", "金价"] },
+    yAxis: [
+      { type: "value", name: "ETF(吨)", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "金价 $/oz", nameTextStyle: { color: COLOR.primary },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "ETF持仓", type: "line", smooth: true, data: gm.etf, yAxisIndex: 0,
+        lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold }, symbol: "none",
+        areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
+          colorStops: [{offset:0,color:"rgba(212,160,23,0.2)"},{offset:1,color:"rgba(212,160,23,0)"}] } } },
+      { name: "金价", type: "line", smooth: true, data: gm.gold, yAxisIndex: 1,
+        lineStyle: { color: COLOR.primary, width: 2, type: "dashed" }, itemStyle: { color: COLOR.primary }, symbol: "none" }
+    ]
   }));
 }
 
