@@ -149,27 +149,42 @@
     <section class="page" id="page-copper">
       <div class="page-title">
         <h2>铜专题</h2>
-        <p class="subtitle">价格 · 产能供给 · 库存 · 需求 · 加工费信号</p>
+        <p class="subtitle">价格 · 产能需求缺口 · 中外消费 · 库存 · 加工费信号 · 数据截至 2026-07</p>
       </div>
       <div class="dashboard-grid">
         <div class="card card-full">
-          <div class="card-head"><h3>铜价走势（近5年）</h3></div>
+          <div class="card-head">
+            <h3>铜价走势（月度，2021.01-2026.07）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartCopperPrice" class="chart chart-lg"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>全球精炼铜产量（近5年）</h3></div>
-          <div id="chartCopperSupply" class="chart"></div>
+          <div class="card-head">
+            <h3>全球铜产能·需求·缺口（月度，万吨）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
+          <div id="chartCopperSupplyDemand" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>三大交易所铜库存（近5年）</h3></div>
+          <div class="card-head">
+            <h3>中国 vs 全球铜消费量（月度，万吨）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
+          <div id="chartCopperChinaCons" class="chart"></div>
+        </div>
+        <div class="card card-half">
+          <div class="card-head">
+            <h3>三大交易所铜库存（月度，万吨）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartCopperInventory" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>全球精炼铜消费量（近5年）</h3></div>
-          <div id="chartCopperDemand" class="chart"></div>
-        </div>
-        <div class="card card-half">
-          <div class="card-head"><h3>铜精矿加工费 TC（美元/吨）</h3></div>
+          <div class="card-head">
+            <h3>铜精矿加工费TC（月度现货+年度长单，美元/吨）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartCopperTc" class="chart"></div>
         </div>
       </div>
@@ -201,23 +216,35 @@
     <section class="page" id="page-macro">
       <div class="page-title">
         <h2>宏观背景</h2>
-        <p class="subtitle">美元 · 美债实际利率 · 全球PMI · 货币政策周期</p>
+        <p class="subtitle">美元 · 美债实际利率 + 金铜叠加 · 全球PMI + CPI · 利率周期 · 数据截至 2026-07</p>
       </div>
       <div class="dashboard-grid">
         <div class="card card-half">
-          <div class="card-head"><h3>美元指数 DXY（近5年）</h3></div>
+          <div class="card-head">
+            <h3>美元指数 DXY（月度，2021.01-2026.07）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartDxy" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>10年期美债实际利率 TIPS</h3></div>
+          <div class="card-head">
+            <h3>10年期TIPS实际利率 + 金铜价格叠加（月度）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartTips" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>全球制造业 PMI（近5年）</h3></div>
+          <div class="card-head">
+            <h3>全球制造业PMI + 美国CPI同比（月度）</h3>
+            <span class="card-tag">数据截至 2026-07</span>
+          </div>
           <div id="chartPmi" class="chart"></div>
         </div>
         <div class="card card-half">
-          <div class="card-head"><h3>美联储货币政策周期时间轴</h3></div>
+          <div class="card-head">
+            <h3>美联储货币政策周期时间轴（按半年）</h3>
+            <span class="card-tag">数据截至 2026-08</span>
+          </div>
           <div id="chartRateCycle" class="chart"></div>
         </div>
       </div>

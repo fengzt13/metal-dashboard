@@ -413,76 +413,106 @@ function renderGold() {
    铜专题页
    ============================================================ */
 function renderCopper() {
-  var c = D.copper;
+  var cm = D.copperMonthly;
+  var months = cm.months;
 
-  /* 铜价 */
-  renderChart("chartCopperPrice", Object.assign(baseConfig("LME铜价（美元/吨）"), {
-    xAxis: { type: "category", data: c.price.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      name: "铜价",
-      type: "line",
-      smooth: true,
-      data: c.price.annual,
-      lineStyle: { color: COLOR.copper, width: 3 },
-      itemStyle: { color: COLOR.copper },
-      areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
-        colorStops: [{offset:0,color:"rgba(192,108,60,0.3)"},{offset:1,color:"rgba(192,108,60,0)"}] } },
-      markLine: {
-        data: [{ type: "max", name: "最高", itemStyle: { color: COLOR.red } }]
-      }
-    }]
-  }));
+  function mc(title) {
+    return {
+      title: { text: title, left: "center", top: 4, textStyle: { fontSize: 14, color: COLOR.text } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 32 },
+      grid: { left: 60, right: 60, top: 64, bottom: 55 },
+      xAxis: { type: "category", data: months,
+        axisLine: { lineStyle: { color: COLOR.grid } },
+        axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
+      dataZoom: [
+        { type: "inside", start: 0, end: 100 },
+        { type: "slider", start: 0, end: 100, height: 18, bottom: 4 }
+      ]
+    };
+  }
 
-  /* 精炼铜产量 */
-  renderChart("chartCopperSupply", Object.assign(baseConfig("全球精炼铜产量（万吨）"), {
-    xAxis: { type: "category", data: c.production.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      name: "产量",
-      type: "bar",
-      data: c.production.ktons,
-      itemStyle: { color: COLOR.copper, borderRadius: [4, 4, 0, 0] },
-      label: { show: true, position: "top", color: COLOR.sub }
-    }]
-  }));
-
-  /* 三大交易所库存 */
-  renderChart("chartCopperInventory", Object.assign(baseConfig("三大交易所铜库存（万吨）"), {
-    xAxis: { type: "category", data: c.inventory.years, axisLabel: { color: COLOR.sub } },
-    legend: { top: 32, data: ["LME", "SHFE", "COMEX"] },
+  /* 1. 铜价走势（月度，叠加月环比柱） */
+  renderChart("chartCopperPrice", Object.assign(mc("铜价走势（月度，2021.01-2026.07）"), {
+    legend: { top: 32, data: ["铜价(美元/吨)", "月环比 %"] },
+    yAxis: [
+      { type: "value", name: "铜价 $/t", nameTextStyle: { color: COLOR.copper },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "月环比 %", nameTextStyle: { color: COLOR.green },
+        axisLabel: { color: COLOR.sub, formatter: "{value}%" }, splitLine: { show: false } }
+    ],
     series: [
-      { name: "LME", type: "line", smooth: true, data: c.inventory.lme, itemStyle: { color: COLOR.copper }, lineStyle: { color: COLOR.copper } },
-      { name: "SHFE", type: "line", smooth: true, data: c.inventory.shfe, itemStyle: { color: COLOR.gold }, lineStyle: { color: COLOR.gold } },
-      { name: "COMEX", type: "line", smooth: true, data: c.inventory.comex, itemStyle: { color: COLOR.primary }, lineStyle: { color: COLOR.primary } }
+      { name: "铜价(美元/吨)", type: "line", smooth: true, data: cm.copper, yAxisIndex: 0,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper },
+        symbol: "circle", symbolSize: 3,
+        areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
+          colorStops: [{offset:0,color:"rgba(192,108,60,0.2)"},{offset:1,color:"rgba(192,108,60,0)"}] } } },
+      { name: "月环比 %", type: "bar", data: cm.copperMom, yAxisIndex: 1,
+        itemStyle: { color: function(p) { return p.value >= 0 ? "rgba(58,166,107,0.4)" : "rgba(217,83,79,0.4)"; } },
+        barWidth: "60%" }
     ]
   }));
 
-  /* 精炼铜消费 */
-  renderChart("chartCopperDemand", Object.assign(baseConfig("全球精炼铜消费量（万吨）"), {
-    xAxis: { type: "category", data: c.demand.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      type: "line", smooth: true,
-      data: c.demand.ktons,
-      lineStyle: { color: COLOR.primary, width: 3 },
-      itemStyle: { color: COLOR.primary },
-      areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
-        colorStops: [{offset:0,color:"rgba(47,111,237,0.25)"},{offset:1,color:"rgba(47,111,237,0)"}] } }
-    }]
+  /* 2. 产能/需求/缺口（月度，双Y轴） */
+  renderChart("chartCopperSupplyDemand", Object.assign(mc("全球铜产能·需求·缺口（月度，万吨）"), {
+    legend: { top: 32, data: ["全球产量", "全球消费", "供需缺口"] },
+    yAxis: [
+      { type: "value", name: "万吨", nameTextStyle: { color: COLOR.sub },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "缺口(万吨)", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "全球产量", type: "line", smooth: true, data: cm.globalProd, yAxisIndex: 0,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper }, symbol: "none" },
+      { name: "全球消费", type: "line", smooth: true, data: cm.globalCons, yAxisIndex: 0,
+        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary }, symbol: "none" },
+      { name: "供需缺口", type: "bar", data: cm.deficit, yAxisIndex: 1,
+        itemStyle: { color: function(p) { return p.value >= 0 ? "rgba(58,166,107,0.5)" : "rgba(217,83,79,0.5)"; } },
+        barWidth: "50%" }
+    ]
   }));
 
-  /* 加工费TC */
-  renderChart("chartCopperTc", Object.assign(baseConfig("铜精矿加工费TC（美元/吨，年度长单）"), {
-    xAxis: { type: "category", data: c.tc.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      type: "line", smooth: true,
-      data: c.tc.value,
-      lineStyle: { color: COLOR.red, width: 3 },
-      itemStyle: { color: COLOR.red },
-      markPoint: {
-        data: [
-          { coord: [5, 0], name: "2026零加工费", value: "历史首次", itemStyle: { color: COLOR.red } }
-        ]
-      }
-    }]
+  /* 3. 中国 vs 全球铜消费量（月度） */
+  renderChart("chartCopperChinaCons", Object.assign(mc("中国 vs 全球铜消费量（月度，万吨）"), {
+    legend: { top: 32, data: ["全球消费", "中国消费"] },
+    yAxis: { type: "value", name: "万吨", nameTextStyle: { color: COLOR.sub },
+      axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+    series: [
+      { name: "全球消费", type: "line", smooth: true, data: cm.globalCons,
+        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary }, symbol: "none" },
+      { name: "中国消费", type: "bar", data: cm.chinaCons,
+        itemStyle: { color: COLOR.gold, borderRadius: [3,3,0,0] } }
+    ]
+  }));
+
+  /* 4. 三大交易所库存（月度） */
+  renderChart("chartCopperInventory", Object.assign(mc("三大交易所铜库存（月度，万吨）"), {
+    legend: { top: 32, data: ["LME", "SHFE", "COMEX"] },
+    yAxis: { type: "value", name: "万吨", nameTextStyle: { color: COLOR.sub },
+      axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+    series: [
+      { name: "LME", type: "line", smooth: true, data: cm.lme,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper }, symbol: "none" },
+      { name: "SHFE", type: "line", smooth: true, data: cm.shfe,
+        lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold }, symbol: "none" },
+      { name: "COMEX", type: "line", smooth: true, data: cm.comex,
+        lineStyle: { color: COLOR.red, width: 2 }, itemStyle: { color: COLOR.red }, symbol: "none" }
+    ]
+  }));
+
+  /* 5. 加工费TC（月度现货 + 年度长单） */
+  renderChart("chartCopperTc", Object.assign(mc("铜精矿加工费TC（月度现货，美元/吨）"), {
+    legend: { top: 32, data: ["TC现货", "TC年度长单"] },
+    yAxis: { type: "value", name: "美元/吨", nameTextStyle: { color: COLOR.sub },
+      axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+    series: [
+      { name: "TC现货", type: "line", smooth: false, data: cm.tcSpot,
+        lineStyle: { color: COLOR.red, width: 2 }, itemStyle: { color: COLOR.red }, symbol: "circle", symbolSize: 3,
+        markLine: { data: [{ yAxis: 0, name: "零线", lineStyle: { color: COLOR.muted, type: "dashed" } }] } },
+      { name: "TC年度长单", type: "line", step: "end", data: [59.5,59.5,59.5,59.5,59.5,59.5,59.5,59.5,59.5,59.5,59.5,59.5,65,65,65,65,65,65,65,65,65,65,65,65,88,88,88,88,88,88,88,88,88,88,88,88,80,80,80,80,80,80,80,80,80,80,80,80,21.25,21.25,21.25,21.25,21.25,21.25,21.25,21.25,21.25,21.25,21.25,21.25,0,0,0,0,0,0,0],
+        lineStyle: { color: COLOR.primary, width: 2, type: "dashed" }, itemStyle: { color: COLOR.primary }, symbol: "none" }
+    ]
   }));
 }
 
@@ -541,50 +571,118 @@ function renderRatio() {
    宏观背景页
    ============================================================ */
 function renderMacro() {
-  var macro = D.macro;
+  var mm = D.macroMonthly;
+  var m = D.monthly;
+  var months = mm.months;
 
-  renderChart("chartDxy", Object.assign(baseConfig("美元指数 DXY"), {
-    xAxis: { type: "category", data: macro.dxy.years, axisLabel: { color: COLOR.sub } },
-    series: [{ type: "line", smooth: true, data: macro.dxy.value,
-      lineStyle: { color: COLOR.gold, width: 3 }, itemStyle: { color: COLOR.gold },
+  function mc(title) {
+    return {
+      title: { text: title, left: "center", top: 4, textStyle: { fontSize: 14, color: COLOR.text } },
+      tooltip: { trigger: "axis" },
+      legend: { top: 32 },
+      grid: { left: 60, right: 60, top: 64, bottom: 55 },
+      xAxis: { type: "category", data: months,
+        axisLine: { lineStyle: { color: COLOR.grid } },
+        axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
+      dataZoom: [
+        { type: "inside", start: 0, end: 100 },
+        { type: "slider", start: 0, end: 100, height: 18, bottom: 4 }
+      ]
+    };
+  }
+
+  /* 1. 美元指数 DXY（月度） */
+  renderChart("chartDxy", Object.assign(mc("美元指数 DXY（月度，2021.01-2026.07）"), {
+    yAxis: { type: "value", name: "DXY", nameTextStyle: { color: COLOR.gold },
+      axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+    series: [{
+      name: "DXY", type: "line", smooth: true, data: mm.dxy,
+      lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold }, symbol: "none",
       areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
-        colorStops: [{offset:0,color:"rgba(212,160,23,0.2)"},{offset:1,color:"rgba(212,160,23,0)"}] } } }]
-  }));
-
-  renderChart("chartTips", Object.assign(baseConfig("10年期美债实际利率 TIPS（%）"), {
-    xAxis: { type: "category", data: macro.tips.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      type: "line", smooth: true, data: macro.tips.value,
-      lineStyle: { color: COLOR.primary, width: 3 }, itemStyle: { color: COLOR.primary },
-      markLine: { data: [{ yAxis: 0, lineStyle: { color: COLOR.muted } }] }
+        colorStops: [{offset:0,color:"rgba(212,160,23,0.15)"},{offset:1,color:"rgba(212,160,23,0)"}] } }
     }]
   }));
 
-  renderChart("chartPmi", Object.assign(baseConfig("全球制造业 PMI（荣枯线50）"), {
-    xAxis: { type: "category", data: macro.pmi.years, axisLabel: { color: COLOR.sub } },
-    series: [{
-      type: "line", smooth: true, data: macro.pmi.value,
-      lineStyle: { color: COLOR.copper, width: 3 }, itemStyle: { color: COLOR.copper },
-      markLine: { data: [{ yAxis: 50, name: "荣枯线", lineStyle: { color: COLOR.red, type: "dashed" } }] }
-    }]
+  /* 2. TIPS实际利率 + 金铜价格叠加（三Y轴） */
+  renderChart("chartTips", Object.assign(mc("10年期TIPS实际利率 + 金铜价格叠加（月度）"), {
+    legend: { top: 32, data: ["TIPS实际利率(%)", "金价(美元/盎司)", "铜价(美元/吨)"] },
+    yAxis: [
+      { type: "value", name: "利率 %", position: "left", nameTextStyle: { color: COLOR.primary },
+        axisLabel: { color: COLOR.sub, formatter: "{value}%" }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "金价 $/oz", position: "right", nameTextStyle: { color: COLOR.gold },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } },
+      { type: "value", name: "铜价 $/t", position: "right", offset: 60, nameTextStyle: { color: COLOR.copper },
+        axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "TIPS实际利率(%)", type: "line", smooth: true, data: mm.tips, yAxisIndex: 0,
+        lineStyle: { color: COLOR.primary, width: 2 }, itemStyle: { color: COLOR.primary }, symbol: "none",
+        markLine: { data: [{ yAxis: 0, lineStyle: { color: COLOR.muted, type: "dashed" } }] } },
+      { name: "金价(美元/盎司)", type: "line", smooth: true, data: m.gold, yAxisIndex: 1,
+        lineStyle: { color: COLOR.gold, width: 1.5, type: "dashed" }, itemStyle: { color: COLOR.gold }, symbol: "none" },
+      { name: "铜价(美元/吨)", type: "line", smooth: true, data: m.copper, yAxisIndex: 2,
+        lineStyle: { color: COLOR.copper, width: 1.5, type: "dashed" }, itemStyle: { color: COLOR.copper }, symbol: "none" }
+    ]
   }));
 
+  /* 3. 全球制造业PMI + CPI（月度，双Y轴） */
+  renderChart("chartPmi", Object.assign(mc("全球制造业PMI + 美国CPI同比（月度）"), {
+    legend: { top: 32, data: ["全球PMI", "美国CPI同比(%)"] },
+    yAxis: [
+      { type: "value", name: "PMI", position: "left", nameTextStyle: { color: COLOR.copper },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
+      { type: "value", name: "CPI %", position: "right", nameTextStyle: { color: COLOR.red },
+        axisLabel: { color: COLOR.sub, formatter: "{value}%" }, splitLine: { show: false } }
+    ],
+    series: [
+      { name: "全球PMI", type: "line", smooth: true, data: mm.pmi, yAxisIndex: 0,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper }, symbol: "none",
+        markLine: { data: [{ yAxis: 50, name: "荣枯线", lineStyle: { color: COLOR.muted, type: "dashed" } }] } },
+      { name: "美国CPI同比(%)", type: "line", smooth: true, data: mm.cpiYoy, yAxisIndex: 1,
+        lineStyle: { color: COLOR.red, width: 2 }, itemStyle: { color: COLOR.red }, symbol: "none" }
+    ]
+  }));
+
+  /* 4. 美联储利率时间轴（按半年维度，自定义渲染避免文字遮挡） */
+  var ev = mm.rateEvents;
+  var evColors = { primary: COLOR.primary, gold: COLOR.gold, green: COLOR.green, red: COLOR.red };
   renderChart("chartRateCycle", {
-    tooltip: {},
-    grid: { left: 40, right: 24, top: 30, bottom: 40 },
-    xAxis: { type: "category", data: macro.rateCycle.events.map(function (e) { return e.year; }), axisLabel: { color: COLOR.sub } },
-    yAxis: { show: false, min: 0, max: 1 },
+    title: { text: "美联储货币政策周期时间轴（按半年）", left: "center", top: 4, textStyle: { fontSize: 14, color: COLOR.text } },
+    tooltip: {
+      trigger: "item",
+      formatter: function(p) {
+        var d = ev[p.dataIndex];
+        return d.period + "<br/>" + d.label + "<br/>利率区间：" + d.rate;
+      }
+    },
+    grid: { left: 40, right: 24, top: 40, bottom: 80 },
+    xAxis: { type: "category", data: ev.map(function(e) { return e.period; }),
+      axisLine: { lineStyle: { color: COLOR.grid } },
+      axisLabel: { color: COLOR.sub, fontSize: 10, rotate: 30 } },
+    yAxis: { show: false, min: 0, max: 3 },
     series: [{
-      type: "bar",
-      data: macro.rateCycle.events.map(function (e, i) {
-        return { value: 0.5, name: e.label, itemStyle: { color: i < 3 ? COLOR.primary : COLOR.green } };
-      }),
-      label: {
-        show: true, position: "top", formatter: function (p) {
-          return p.name;
-        }, color: COLOR.text, fontSize: 12
+      type: "custom",
+      renderItem: function(params, api) {
+        var idx = api.value(0);
+        var d = ev[idx];
+        var cat = api.coord([idx, 1]);
+        var cat2 = api.coord([idx, 0.5]);
+        var w = api.size([1, 0])[0] * 0.7;
+        return {
+          type: "group",
+          children: [
+            { type: "rect", shape: { x: cat[0] - w/2, y: cat[1] - 25, width: w, height: 50 },
+              style: { fill: evColors[d.color] || COLOR.primary, opacity: 0.85, stroke: "#fff", lineWidth: 2 } },
+            { type: "text", style: { text: d.label, x: cat[0], y: cat[1] - 8, textAlign: "center",
+              fill: "#fff", fontSize: 11, fontWeight: "bold" } },
+            { type: "text", style: { text: d.rate, x: cat[0], y: cat[1] + 10, textAlign: "center",
+              fill: "#fff", fontSize: 10 } },
+            { type: "text", style: { text: d.period, x: cat[0], y: cat2[1] + 18, textAlign: "center",
+              fill: COLOR.sub, fontSize: 10 } }
+          ]
+        };
       },
-      barWidth: 30
+      data: ev.map(function(e, i) { return i; })
     }]
   });
 }
