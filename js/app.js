@@ -168,16 +168,20 @@ function renderOverview() {
   document.getElementById("overallTag").textContent =
     "黄金 " + goldScore + " 分 · 铜 " + copperScore + " 分 · 均处高位景气";
 
-  /* 2. 金铜比走势 */
-  var ratioData = D.ratio;
-  renderChart("chartRatio", Object.assign(baseConfig("金铜比走势"), {
-    xAxis: { type: "category", data: ratioData.years, axisLabel: { color: COLOR.sub } },
+  /* 2. 金铜比走势（月度粒度） */
+  var monthly = D.monthly;
+  renderChart("chartRatio", Object.assign(baseConfig("金铜比走势（月度，2021.01-2026.07）"), {
+    xAxis: { type: "category", data: monthly.months, axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
+    dataZoom: [
+      { type: "inside", start: 0, end: 100 },
+      { type: "slider", start: 0, end: 100, height: 18, bottom: 4 }
+    ],
     series: [{
       name: "金铜比",
       type: "line",
       smooth: true,
-      data: ratioData.value,
-      lineStyle: { color: COLOR.primary, width: 3 },
+      data: monthly.ratio,
+      lineStyle: { color: COLOR.primary, width: 2 },
       itemStyle: { color: COLOR.primary },
       areaStyle: { color: { type: "linear", x:0,y:0,x2:0,y2:1,
         colorStops: [{offset:0,color:"rgba(47,111,237,0.25)"},{offset:1,color:"rgba(47,111,237,0)"}] } },
@@ -185,28 +189,36 @@ function renderOverview() {
         lineStyle: { color: COLOR.muted, type: "dashed" } }
     }]
   }));
-  var lastRatio = ratioData.value[ratioData.value.length - 1];
+  var lastRatio = monthly.ratio[monthly.ratio.length - 1];
+  var firstRatio = monthly.ratio[0];
+  var ratioMultiple = (lastRatio / firstRatio).toFixed(1);
   document.getElementById("ratioTag").textContent =
-    "当前 0.46 · 较2021年走扩约2.4倍（避险占优）";
+    "当前 " + lastRatio.toFixed(3) + " · 较2021年初走扩约" + ratioMultiple + "倍（避险占优）";
 
-  /* 3. 双价格走势（双Y轴） */
+  /* 3. 双价格走势（月度粒度，双Y轴） */
   renderChart("chartDualPrice", {
     color: [COLOR.gold, COLOR.copper],
     legend: { top: 0 },
     tooltip: { trigger: "axis" },
-    grid: { left: 60, right: 60, top: 40, bottom: 40 },
-    xAxis: { type: "category", data: D.gold.price.years, axisLabel: { color: COLOR.sub } },
+    grid: { left: 60, right: 60, top: 40, bottom: 55 },
+    xAxis: { type: "category", data: monthly.months, axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
+    dataZoom: [
+      { type: "inside", start: 0, end: 100 },
+      { type: "slider", start: 0, end: 100, height: 18, bottom: 4 }
+    ],
     yAxis: [
       { type: "value", name: "金价 $/oz", nameTextStyle: { color: COLOR.gold },
-        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.border } } },
+        axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
       { type: "value", name: "铜价 $/t", nameTextStyle: { color: COLOR.copper },
         axisLabel: { color: COLOR.sub }, splitLine: { show: false } }
     ],
     series: [
-      { name: "金价(美元/盎司)", type: "line", smooth: true, data: D.gold.price.annualAvg,
-        lineStyle: { color: COLOR.gold, width: 3 }, itemStyle: { color: COLOR.gold }, yAxisIndex: 0 },
-      { name: "铜价(美元/吨)", type: "line", smooth: true, data: D.copper.price.annual,
-        lineStyle: { color: COLOR.copper, width: 3 }, itemStyle: { color: COLOR.copper }, yAxisIndex: 1 }
+      { name: "金价(美元/盎司)", type: "line", smooth: true, data: monthly.gold,
+        lineStyle: { color: COLOR.gold, width: 2 }, itemStyle: { color: COLOR.gold }, yAxisIndex: 0,
+        symbol: "circle", symbolSize: 4 },
+      { name: "铜价(美元/吨)", type: "line", smooth: true, data: monthly.copper,
+        lineStyle: { color: COLOR.copper, width: 2 }, itemStyle: { color: COLOR.copper }, yAxisIndex: 1,
+        symbol: "circle", symbolSize: 4 }
     ]
   });
 
