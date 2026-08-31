@@ -162,6 +162,38 @@ body {
 .metric-card .m-value.copper { color: var(--copper); }
 .metric-card .m-value.blue { color: var(--blue); }
 
+/* ===== 总结卡片 ===== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+.summary-block {
+  background: var(--bg);
+  border-radius: 10px;
+  padding: 14px 16px;
+}
+.sb-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  border-left: 3px solid var(--primary);
+  padding-left: 8px;
+  margin-bottom: 10px;
+}
+.sb-body p {
+  font-size: 12.5px;
+  line-height: 1.75;
+  color: var(--text-sub);
+  margin-bottom: 8px;
+}
+.sb-body p:last-child { margin-bottom: 0; }
+.sb-body strong { color: var(--text); font-weight: 600; }
+
+@media (max-width: 900px) {
+  .summary-grid { grid-template-columns: 1fr; }
+}
+
 /* ===== 数据源表 ===== */
 .sources-wrap table {
   width: 100%;
