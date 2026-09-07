@@ -213,6 +213,164 @@ body {
 .sources-wrap tr:hover td { background: #f6faff; }
 .sources-wrap .src-missing { color: var(--copper); font-style: italic; }
 
+/* ===== 看空声音页 ===== */
+.bears-filter { padding: 6px 4px; }
+.filter-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.filter-row:last-child { margin-bottom: 0; }
+.filter-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-sub);
+  min-width: 72px;
+}
+.filter-btn {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--text-sub);
+  font-size: 12.5px;
+  padding: 5px 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition: all .2s;
+  font-family: inherit;
+}
+.filter-btn:hover { border-color: var(--primary); color: var(--primary); }
+.filter-btn.active {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+/* 分类统计条 */
+.bears-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.stat-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 5px 14px;
+  font-size: 12.5px;
+  color: var(--text-sub);
+}
+.stat-chip b { color: var(--text); font-size: 14px; }
+.stat-chip .dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* 看空观点卡片网格 */
+.bears-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.bear-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow .2s, transform .15s;
+}
+.bear-card:hover { box-shadow: 0 4px 16px rgba(47,111,237,.08); transform: translateY(-2px); }
+.bear-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 8px;
+}
+.bear-card-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.4;
+}
+.bear-card-role {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+.bear-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.bear-tag {
+  font-size: 11px;
+  color: var(--primary);
+  background: var(--primary-light);
+  border-radius: 10px;
+  padding: 2px 8px;
+  font-weight: 600;
+}
+.bear-tag.target-gold { color: var(--gold); background: #faf3dd; }
+.bear-tag.target-copper { color: var(--copper); background: #f9ede2; }
+.bear-tag.target-both { color: #8a63c9; background: #f1eafb; }
+.bear-thesis {
+  font-size: 12.5px;
+  line-height: 1.7;
+  color: var(--text-sub);
+  flex: 1;
+}
+.bear-thesis strong { color: var(--text); }
+.bear-quote {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-style: italic;
+  border-left: 2px solid var(--border);
+  padding-left: 10px;
+  line-height: 1.6;
+}
+.bear-card-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  border-top: 1px dashed var(--border);
+  padding-top: 10px;
+}
+.bear-date {
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+.bear-status {
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 10px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.bear-status.active { background: #e6f6ec; color: #2c7a4f; }
+.bear-status.triggered { background: #fdf3dd; color: #a67a1a; }
+.bear-status.invalidated { background: #fdeaea; color: #c0392b; }
+.bear-source {
+  font-size: 11px;
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+.bear-source a { color: var(--primary); text-decoration: none; }
+.bear-source a:hover { text-decoration: underline; }
+
+@media (max-width: 1100px) {
+  .bears-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 700px) {
+  .bears-grid { grid-template-columns: 1fr; }
+}
+
 /* ===== Footer ===== */
 .site-footer {
   max-width: 1280px;

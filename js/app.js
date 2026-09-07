@@ -57,6 +57,7 @@ var pageRenders = {
   copper: renderCopper,
   ratio: renderRatio,
   macro: renderMacro,
+  bears: renderBears,
   sources: renderSources
 };
 var renderedPages = {};
@@ -170,7 +171,7 @@ function renderOverview() {
 
   /* 2. 金铜比走势（月度粒度） */
   var monthly = D.monthly;
-  renderChart("chartRatio", Object.assign(baseConfig("金铜比走势（月度，2021.01-2026.07）"), {
+  renderChart("chartRatio", Object.assign(baseConfig("金铜比走势（月度，2021.01-2026.08）"), {
     xAxis: { type: "category", data: monthly.months, axisLabel: { color: COLOR.sub, rotate: 35, fontSize: 10 } },
     dataZoom: [
       { type: "inside", start: 0, end: 100 },
@@ -300,7 +301,7 @@ function renderGold() {
   }
 
   /* 1. 黄金价格走势（月度，叠加月环比柱） */
-  renderChart("chartGoldPrice", Object.assign(monthlyConfig("黄金价格走势（月度，2021.01-2026.07）"), {
+  renderChart("chartGoldPrice", Object.assign(monthlyConfig("黄金价格走势（月度，2021.01-2026.08）"), {
     legend: { top: 32, data: ["金价(美元/盎司)", "月环比 %"] },
     yAxis: [
       { type: "value", name: "金价 $/oz", nameTextStyle: { color: COLOR.gold },
@@ -336,7 +337,7 @@ function renderGold() {
   }));
 
   /* 3. 中国央行月度净买入 & 储备（新增） */
-  renderChart("chartGoldChinaCb", Object.assign(monthlyConfig("中国央行月度净买入 & 储备（2021.01-2026.07）"), {
+  renderChart("chartGoldChinaCb", Object.assign(monthlyConfig("中国央行月度净买入 & 储备（2021.01-2026.08）"), {
     legend: { top: 32, data: ["中国央行净买入(吨)", "黄金储备(万oz)"] },
     yAxis: [
       { type: "value", name: "净买入(吨)", nameTextStyle: { color: COLOR.gold },
@@ -433,7 +434,7 @@ function renderCopper() {
   }
 
   /* 1. 铜价走势（月度，叠加月环比柱） */
-  renderChart("chartCopperPrice", Object.assign(mc("铜价走势（月度，2021.01-2026.07）"), {
+  renderChart("chartCopperPrice", Object.assign(mc("铜价走势（月度，2021.01-2026.08）"), {
     legend: { top: 32, data: ["铜价(美元/吨)", "月环比 %"] },
     yAxis: [
       { type: "value", name: "铜价 $/t", nameTextStyle: { color: COLOR.copper },
@@ -592,7 +593,7 @@ function renderMacro() {
   }
 
   /* 1. 美元指数 DXY（月度） */
-  renderChart("chartDxy", Object.assign(mc("美元指数 DXY（月度，2021.01-2026.07）"), {
+  renderChart("chartDxy", Object.assign(mc("美元指数 DXY（月度，2021.01-2026.08）"), {
     yAxis: { type: "value", name: "DXY", nameTextStyle: { color: COLOR.gold },
       axisLabel: { color: COLOR.sub }, splitLine: { lineStyle: { color: COLOR.grid } } },
     series: [{
@@ -688,6 +689,110 @@ function renderMacro() {
 }
 
 /* ============================================================
+   看空声音页
+   ============================================================ */
+var bearsState = { target: "all", category: "all", status: "all" };
+
+function renderBears() {
+  var B = D.bears;
+  if (!B || !B.items) return;
+
+  /* 计数 */
+  var total = B.items.length;
+  var countEl = document.getElementById("bearsCount");
+  if (countEl) countEl.textContent = "共收录 " + total + " 条观点";
+
+  /* 绑定筛选 */
+  var btns = document.querySelectorAll(".bears-filter .filter-btn");
+  btns.forEach(function (btn) {
+    btn.addEventListener("click", function () {
+      var f = btn.getAttribute("data-filter");
+      var v = btn.getAttribute("data-value");
+      bearsState[f] = v;
+      btns.forEach(function (b) {
+        var same = b.getAttribute("data-filter") === f;
+        b.classList.toggle("active", same && b.getAttribute("data-value") === v);
+      });
+      bearsApply();
+    });
+  });
+
+  bearsApply();
+}
+
+/* 分类统计（不随筛选变化，展示全量结构） */
+function bearsStatsHtml() {
+  var B = D.bears;
+  var count = {};
+  B.items.forEach(function (it) {
+    it.category.forEach(function (c) { count[c] = (count[c] || 0) + 1; });
+  });
+  return B.categories.map(function (cat) {
+    var n = count[cat.id] || 0;
+    return '<span class="stat-chip"><span class="dot" style="background:' +
+      bearsCatColor(cat.id) + '"></span><b>' + cat.id + '</b> ' + cat.name +
+      ' · <b>' + n + '</b> 条</span>';
+  }).join("");
+}
+
+function bearsCatColor(id) {
+  var colors = { A: "#2f6fed", B: "#d4a017", C: "#8a63c9", D: "#c06c3c", E: "#3aa66b", F: "#d9534f" };
+  return colors[id] || "#9aa8bb";
+}
+
+function bearsStatusInfo(st) {
+  return (D.bears.statusMap && D.bears.statusMap[st]) ||
+    { label: st, color: "#9aa8bb" };
+}
+
+function bearsCardHtml(it) {
+  var sm = bearsStatusInfo(it.status);
+  var catTags = it.category.map(function (c) {
+    var cat = D.bears.categories.find(function (x) { return x.id === c; });
+    return '<span class="bear-tag" title="' + (cat ? cat.desc : "") + '">' + c + ' ' + (cat ? cat.name : "") + '</span>';
+  }).join("");
+  var targetTag = '<span class="bear-tag target-' + it.target + '">' +
+    ({ gold: "黄金", copper: "铜", both: "金铜" }[it.target] || it.target) + '</span>';
+  var quote = it.quote ? '<div class="bear-quote">"' + it.quote + '"</div>' : "";
+  var src = it.url ? '<a href="' + it.url + '" target="_blank" rel="noopener">' + it.source + '</a>' : it.source;
+  return '<div class="bear-card">' +
+    '<div class="bear-card-head">' +
+      '<div><div class="bear-card-name">' + it.name + '</div>' +
+      '<div class="bear-card-role">' + it.role + '</div></div>' +
+      '<span class="bear-status ' + it.status + '" style="color:' + sm.color + '">' + sm.label + '</span>' +
+    '</div>' +
+    '<div class="bear-tags">' + targetTag + catTags + '</div>' +
+    '<div class="bear-thesis"><strong>核心逻辑：</strong>' + it.thesis + '</div>' +
+    quote +
+    '<div class="bear-card-meta">' +
+      '<span class="bear-date">' + it.date + '</span>' +
+      '<span class="bear-source">' + src + '</span>' +
+    '</div>' +
+  '</div>';
+}
+
+function bearsApply() {
+  var B = D.bears;
+  var st = bearsState;
+  var list = B.items.filter(function (it) {
+    if (st.target !== "all" && it.target !== st.target) return false;
+    if (st.category !== "all" && it.category.indexOf(st.category) < 0) return false;
+    if (st.status !== "all" && it.status !== st.status) return false;
+    return true;
+  });
+  var grid = document.getElementById("bearsGrid");
+  if (grid) grid.innerHTML = list.map(bearsCardHtml).join("") ||
+    '<div class="chart-empty">该筛选条件下暂无收录</div>';
+
+  /* 统计条（全量） */
+  var statsEl = document.getElementById("bearsStats");
+  if (statsEl) statsEl.innerHTML = bearsStatsHtml();
+
+  var countEl = document.getElementById("bearsCount");
+  if (countEl) countEl.textContent = "共收录 " + B.items.length + " 条 · 当前显示 " + list.length + " 条";
+}
+
+/* ============================================================
    数据源页
    ============================================================ */
 function renderSources() {
@@ -718,7 +823,7 @@ document.addEventListener("DOMContentLoaded", init);
 if (typeof window !== "undefined" && window.location && window.location.search && window.location.search.indexOf("verify=1") >= 0) {
   window.addEventListener("load", function () {
     setTimeout(function () {
-      var pages = ["gold", "copper", "ratio", "macro", "sources"];
+      var pages = ["gold", "copper", "ratio", "macro", "bears", "sources"];
       pages.forEach(function (p) {
         var b = document.querySelector('.nav-btn[data-page="' + p + '"]');
         if (b) b.click();
