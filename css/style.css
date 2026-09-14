@@ -54,6 +54,7 @@ body {
   font-weight: 700;
   color: var(--text);
   letter-spacing: 1px;
+  white-space: nowrap;
 }
 .logo::before {
   content: "◆";
@@ -61,7 +62,8 @@ body {
   margin-right: 6px;
   font-size: 16px;
 }
-.main-nav { display: flex; gap: 6px; flex-wrap: wrap; }
+.main-nav { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.nav-separator { width: 1px; height: 20px; background: var(--border); margin: 0 4px; }
 .nav-btn {
   background: transparent;
   border: 1px solid transparent;
@@ -79,13 +81,22 @@ body {
   color: #fff;
   font-weight: 600;
 }
+.header-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; flex-wrap: nowrap; }
 .header-meta .update-date {
   font-size: 12px;
   color: var(--text-muted);
   background: var(--primary-light);
   padding: 4px 12px;
   border-radius: 12px;
+  white-space: nowrap;
 }
+.cross-links { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
+.cross-link {
+  color: var(--text-sub); text-decoration: none; font-size: 12px; font-weight: 500;
+  padding: 4px 10px; border-radius: 9999px; border: 1px solid var(--border);
+  transition: color .2s, background .2s, border-color .2s; white-space: nowrap;
+}
+.cross-link:hover { color: var(--primary); background: var(--primary-light); border-color: var(--primary); }
 
 /* ===== Layout ===== */
 .page-container { max-width: 1280px; margin: 0 auto; padding: 24px; }
