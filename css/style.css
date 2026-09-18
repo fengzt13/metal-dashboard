@@ -90,11 +90,19 @@ body {
   border-radius: 12px;
   white-space: nowrap;
 }
-.cross-links { display: flex; align-items: center; gap: 4px; flex-wrap: nowrap; }
-.cross-links-label { font-size: 12px; color: var(--text-muted); margin-right: 2px; white-space: nowrap; }
+.cross-bar {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 8px 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+.cross-links-label { font-size: 11px; color: var(--text-muted); white-space: nowrap; margin-right: 4px; }
 .cross-link {
-  color: var(--text-sub); text-decoration: none; font-size: 12px; font-weight: 500;
-  padding: 4px 10px; border-radius: 9999px; border: 1px solid var(--border);
+  color: var(--text-sub); text-decoration: none; font-size: 11px; font-weight: 400;
+  padding: 2px 8px; border-radius: 9999px; border: 1px solid var(--border);
   transition: color .2s, background .2s, border-color .2s; white-space: nowrap;
 }
 .cross-link:hover { color: var(--primary); background: var(--primary-light); border-color: var(--primary); }
