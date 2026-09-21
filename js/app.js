@@ -120,6 +120,16 @@ function renderOverview() {
   document.getElementById("updateDate").textContent =
     "数据更新：" + D.meta.updated;
 
+  /* 数据截至日期标注栏 */
+  if (D.meta.dataStamp) {
+    var stampBar = document.getElementById("dataStampBar");
+    if (stampBar) {
+      stampBar.innerHTML = D.meta.dataStamp.map(function (s) {
+        return '<span class="ds-item"><span class="ds-label">' + s.label + '</span><span class="ds-value">' + s.value + '</span></span>';
+      }).join("");
+    }
+  }
+
   /* 1. 景气度仪表盘（黄金/铜） */
   var goldScore = 72, copperScore = 68;   // 由score数据聚合的总体分
   // 综合得分：加权各维度

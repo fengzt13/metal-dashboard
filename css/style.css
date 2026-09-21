@@ -111,6 +111,26 @@ body {
   margin-bottom: 4px;
 }
 .page-title .subtitle { color: var(--text-sub); font-size: 14px; }
+.data-stamp-bar {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  font-size: 12px;
+  color: var(--text-muted);
+}
+.data-stamp-bar .ds-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.data-stamp-bar .ds-label {
+  font-weight: 600;
+  color: var(--text-sub);
+}
+.data-stamp-bar .ds-value {
+  color: var(--text-muted);
+}
 
 .dashboard-grid {
   display: grid;
